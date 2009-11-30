@@ -2,7 +2,7 @@ Shaved Matrix
 
 This is a C++ Matrix library optimized for 3,4, and N dimensional dense matrices.
 
-Optimizations assume use in physics calculations, so the final row (0,0,0,1) in transform matrices is ignored.
+Optimizations assume use in physics calculations on SE(3). Rotation and translation are supported, skewing and reflecting are not.
 
 The library uses an apparently novel technique for avoiding uneccesary copies but still allowing clean, easy to read infix expressions. (Hopefully someone will point out to me where this has been done before, seems the obvious approach in a language with overloaded function names)
 
