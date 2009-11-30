@@ -26,9 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "math.h"
-#include "shaved_guts.c"
 
 #include "shaved.h"
+#include "shaved_guts.c"
 
 
 Vect3R& Vect3R::operator+(Vect3R& B)

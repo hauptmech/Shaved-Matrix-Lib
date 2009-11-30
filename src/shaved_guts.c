@@ -100,7 +100,7 @@ void cpy_vn(double *dest, double *src,int n)
    int cnt;
    
    for (cnt=0;cnt < n;cnt++)
-      dest[cnt] = a[cnt];
+      dest[cnt] = src[cnt];
 } 
 void add_vn(double* dest, double *a, double* b, int n)
 {
@@ -217,7 +217,7 @@ void mul_mh(double *dest, double *a, double *b)
   dest[11] = ret[11];
 }
 /* 4x4 SE(3) (_mh) times 4x1 vector (_v3)*/
-void matXvec_mh(double *dest, double *m, double *v)
+void matXvec_mh(double *dest, double *a, double *b)
 {
   double ret[3];
   

@@ -1,5 +1,6 @@
+include_directories(${CMAKE_SOURCE_DIR}/include)
 set(SHAVED_SRCS
-shaved.cpp shaved.hpp
+shaved.cpp
 )
 
 ADD_LIBRARY(shaved STATIC ${SHAVED_SRCS})
