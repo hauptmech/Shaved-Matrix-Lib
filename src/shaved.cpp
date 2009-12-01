@@ -1,184 +1,90 @@
 /*
-  The start of a matrix library after I spent yet another day looking for an existing one.
-  I looked at blitz++ and tvmet
+Copyright (c) 2009, Traveler Hauptman
+All rights reserved.
 
-  This library creates two types, a user type and a temporary type. Infix operations create temporary types.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-  The idea is to recreate the fuctionality of btmath and then write a btrobot on top.
-
+THIS SOFTWARE IS PROVIDED BY Traveler Hauptman ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <copyright holder> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include "math.h"
+#include "shaved_guts.c"
 
-#define PRACTICALLY_ZERO 1.0e-10
-void add3(double* dest,double *a,double* b)
-{
-  dest[0] = a[0]+b[0];
-  dest[1] = a[1]+b[1];
-  dest[2] = a[2]+b[2];
-}
-void sub3(double* dest,double *a,double* b)
-{
-  dest[0] = a[0]-b[0];
-  dest[1] = a[1]-b[1];
-  dest[2] = a[2]-b[2];
-}
-double dot3(double* a,double* b)
-{
-  return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-}
-void cross3(double* dest,double *a,double* b)
-{
-  double T[3];
-  T[0] = a[1]*b[2]-a[2]*b[1];
-  T[1] = a[2]*b[0]-a[0]*b[2];
-  T[2] = a[0]*b[1]-a[1]*b[0];
-  dest[0] = T[0];
-  dest[1] = T[1];
-  dest[2] = T[2];
-}
-void unit3(double* dest,double *a)
-{
-  double div;
-  div = sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
-  if (!(div <= PRACTICALLY_ZERO)){
-		dest[0] = a[0]/div;
-  	dest[1] = a[1]/div;
-		dest[2] = a[2]/div; 
-  } else {
-    dest[0] = 0.0;
-    dest[1] = 0.0;
-    dest[2] = 0.0;
-  }
-}
-void scale3(double *dest, double *a,double s)
-{
-  dest[0] = s*a[0];
-  dest[1] = s*a[1];
-  dest[2] = s*a[2];
-}
-void neg3(double *dest, double *a)
-{
-  dest[0] = -a[0];
-  dest[1] = -a[1];
-  dest[2] = -a[2];
-}
-void cpy3(double *dest, double *src)
-{
-  dest[0] = src[0];
-  dest[1] = src[1];
-  dest[2] = src[2];
-} 
+#include "shaved.h"
 
 
-struct Vect3R {
-  int n;
-  double *q;
-  double data[3];
-  
-  Vect3R(){
-    init();
-  }
-
-  Vect3R(double x,double y,double z)
-	{
-		init();
-    q[0] = x; q[1] = y; q[2] = z;
-	}
-  void init(){q = data; n=3;}
-  void set(double x, double y, double z)
-  {
-    q[0] = x; q[1] = y; q[2] = z;
-  }
-
-  Vect3R& operator+(Vect3R& B)
-  { 
-    add3(q,B.q,q);
+Vect3R& Vect3R::operator+(Vect3R& B)
+{ 
+    add_v3(q,B.q,q);
     delete &B;
     return *this;
-  }
-  Vect3R& operator-(Vect3R& B)
-  { 
-    sub3(q,B.q,q);
+}
+Vect3R& Vect3R::operator-(Vect3R& B)
+{ 
+    sub_v3(q,B.q,q);
     delete &B;
     return *this;
-  }
-  Vect3R& operator^(Vect3R& B)
-  { 
-    cross3(q,B.q,q);
+}
+Vect3R& Vect3R::operator^(Vect3R& B)
+{ 
+    cross_v3(q,B.q,q);
     delete &B;
     return *this;
-  }
-  double& operator[](int idx){return q[idx];} 
+}
 
-};
-
-
-struct Vect3 {
-  int n;
-  double *q;
-  double data[3];
-
-  Vect3(){
-    init();
-  }
-  Vect3(double x,double y,double z)
-	{
-		init();
-    set(x,y,z);
-	}
-  void init(){q = data; n=3;}
-  void set(double x, double y, double z)
-  {
-    q[0] = x; q[1] = y; q[2] = z;
-  }
-  Vect3& operator=(Vect3R& A){
-    cpy3(q,A.q);
+Vect3& Vect3::operator=(Vect3R& A){
+    cpy_v3(q,A.q);
     delete &A;
     return *this;
 	}
-  Vect3& operator=(Vect3& A){
-    cpy3(q,A.q);
+Vect3& Vect3::operator=(Vect3& A){
+    cpy_v3(q,A.q);
     return *this;
-	}
-  //fill
-  Vect3& operator=(double& A){
-    q[0] = A;
-    q[1] = A; 
-    q[2] = A;
-    return *this;
-	}
-  double& operator[](int idx){return q[idx];} 
-   
-  		
-		
-};
+}
+
 //Unary negation
 Vect3R& operator-(Vect3& A)
 {
 		Vect3R* ret = new Vect3R();
-    neg3(ret->q,A.q);
+    neg_v3(ret->q,A.q);
     return *ret;
 }
 Vect3R& operator-(Vect3R& A)
 {
-    neg3(A.q,A.q);
+    neg_v3(A.q,A.q);
     return A;
 }
 //Subtraction
 
 Vect3R& operator-(Vect3& A,Vect3& B){
 		Vect3R* ret = new Vect3R();
-    sub3(ret->q,B.q,A.q);
+    sub_v3(ret->q,B.q,A.q);
     return *ret;
 }
 Vect3R& operator-(Vect3R& A,Vect3& B){
-    sub3(A.q,B.q,A.q);
+    sub_v3(A.q,B.q,A.q);
     return A;
 }
 Vect3R& operator-(Vect3& B,Vect3R& A ){
-    sub3(A.q,B.q,A.q);
+    sub_v3(A.q,B.q,A.q);
     return A;
 }
 
@@ -186,27 +92,27 @@ Vect3R& operator-(Vect3& B,Vect3R& A ){
 
 Vect3R& operator+(Vect3& A,Vect3& B){
 		Vect3R* ret = new Vect3R();
-    add3(ret->q,B.q,A.q);
+    add_v3(ret->q,B.q,A.q);
     return *ret;
 }
 Vect3R& operator+(Vect3R& A,Vect3& B){
-    add3(A.q,B.q,A.q);
+    add_v3(A.q,B.q,A.q);
     return A;
 }
 Vect3R& operator+(Vect3& B,Vect3R& A ){
-    add3(A.q,B.q,A.q);
+    add_v3(A.q,B.q,A.q);
     return A;
 }
 //Unit
 Vect3R& operator!(Vect3& A)
 {
 	Vect3R* ret = new Vect3R();
-  unit3(ret->q,A.q);
+  unit_v3(ret->q,A.q);
   return *ret;
 }
 Vect3R& operator!(Vect3R& A)
 {
-  unit3(A.q,A.q);
+  unit_v3(A.q,A.q);
   return A;
 }
 
@@ -227,25 +133,25 @@ double operator~(Vect3R& A)
 double operator*(Vect3& A,Vect3R& B)
 {
   double ret;
-  ret =  dot3(A.q,B.q);
+  ret =  dot_v3(A.q,B.q);
   delete &B;
   return ret;
 }
 double operator*(Vect3R& B,Vect3& A)
 {
   double ret;
-  ret =  dot3(A.q,B.q);
+  ret =  dot_v3(A.q,B.q);
   delete &B;
   return ret;
 }
 double operator*(Vect3& A,Vect3& B)
 {
-  return dot3(A.q,B.q);
+  return dot_v3(A.q,B.q);
 }
 double operator*(Vect3R& A,Vect3R& B)
 {
   double ret;
-  ret =  dot3(A.q,B.q);
+  ret =  dot_v3(A.q,B.q);
   delete &B;
   delete &A;
   return ret;
@@ -253,39 +159,39 @@ double operator*(Vect3R& A,Vect3R& B)
 //Scalar product
 Vect3R& operator*(double B,Vect3R& A)
 {
-  scale3(A.q,A.q,B);
+  scale_v3(A.q,A.q,B);
   return A;
 }
 Vect3R& operator*(Vect3R& A,double B)
 {
-  scale3(A.q,A.q,B);
+  scale_v3(A.q,A.q,B);
   return A;
 }
 Vect3R& operator*(double B,Vect3& A)
 {
 	Vect3R* ret = new Vect3R();
-  scale3(ret->q,A.q,B);
+  scale_v3(ret->q,A.q,B);
   return *ret;
 }
 Vect3R& operator*(Vect3& A,double B)
 {
 	Vect3R* ret = new Vect3R();
-  scale3(ret->q,A.q,B);
+  scale_v3(ret->q,A.q,B);
   return *ret;
 }
 //Cross Product
 
 Vect3R& operator^(Vect3& A,Vect3& B){
 		Vect3R* ret = new Vect3R();
-    cross3(ret->q,B.q,A.q);
+    cross_v3(ret->q,B.q,A.q);
     return *ret;
 }
 Vect3R& operator^(Vect3R& A,Vect3& B){
-    cross3(A.q,B.q,A.q);
+    cross_v3(A.q,B.q,A.q);
     return A;
 }
 Vect3R& operator^(Vect3& B,Vect3R& A ){
-    cross3(A.q,B.q,A.q);
+    cross_v3(A.q,B.q,A.q);
     return A;
 }
 

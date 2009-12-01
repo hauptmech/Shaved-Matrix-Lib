@@ -26,6 +26,100 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
+#define PRACTICALLY_ZERO 1.0e-10
 
+struct Vect3R {
+  int n;
+  double *q;
+  double data[3];
+  
+  Vect3R(){
+    init();
+  }
+
+  Vect3R(double x,double y,double z)
+	{
+		init();
+    q[0] = x; q[1] = y; q[2] = z;
+	}
+  void init(){q = data; n=3;}
+  void set(double x, double y, double z)
+  {
+    q[0] = x; q[1] = y; q[2] = z;
+  }
+
+  Vect3R& operator+(Vect3R& B);
+  Vect3R& operator-(Vect3R& B);
+  Vect3R& operator^(Vect3R& B);
+  double& operator[](int idx){return q[idx];} 
+
+};
+
+
+struct Vect3 {
+  int n;
+  double *q;
+  double data[3];
+
+  Vect3(){
+    init();
+  }
+  Vect3(double x,double y,double z)
+	{
+		init();
+    set(x,y,z);
+	}
+  void init(){q = data; n=3;}
+  void set(double x, double y, double z)
+  {
+    q[0] = x; q[1] = y; q[2] = z;
+  }
+  Vect3& operator=(Vect3R& A);
+  Vect3& operator=(Vect3& A);
+  //fill
+  Vect3& operator=(double& A){
+    q[0] = A;
+    q[1] = A; 
+    q[2] = A;
+    return *this;
+	}
+  double& operator[](int idx){return q[idx];} 
+};
+
+//Unary negation
+Vect3R& operator-(Vect3& A);
+Vect3R& operator-(Vect3R& A);
+//Subtraction
+
+Vect3R& operator-(Vect3& A,Vect3& B);
+Vect3R& operator-(Vect3R& A,Vect3& B);
+Vect3R& operator-(Vect3& B,Vect3R& A );
+
+//Addition
+
+Vect3R& operator+(Vect3& A,Vect3& B);
+Vect3R& operator+(Vect3R& A,Vect3& B);
+Vect3R& operator+(Vect3& B,Vect3R& A );
+//Unit
+Vect3R& operator!(Vect3& A);
+Vect3R& operator!(Vect3R& A);
+//Norm
+double operator~(Vect3& A);
+double operator~(Vect3R& A);
+//Dot product
+double operator*(Vect3& A,Vect3& B);
+double operator*(Vect3& A,Vect3R& B);
+double operator*(Vect3R& B,Vect3& A);
+double operator*(Vect3R& A,Vect3R& B);
+//Scalar product
+Vect3R& operator*(double B,Vect3R& A);
+Vect3R& operator*(Vect3R& A,double B);
+Vect3R& operator*(double B,Vect3& A);
+Vect3R& operator*(Vect3& A,double B);
+//Cross Product
+
+Vect3R& operator^(Vect3& A,Vect3& B);
+Vect3R& operator^(Vect3R& A,Vect3& B);
+Vect3R& operator^(Vect3& B,Vect3R& A );
 
 
